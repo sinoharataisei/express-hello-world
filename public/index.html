@@ -73,9 +73,9 @@
         const li = document.createElement('li')
 
         if (msg.id === myId) {
-          li.textContent = `🙋 自分 : ${msg.text}`
+          li.textContent = `🙋  自分 : ${msg.text}`
         } else if (msg.id === 'BOT') {
-          li.textContent = `🤖 BOT : ${msg.text}`
+          li.textContent = `🤖  BOT : ${msg.text}`
         } else {
           li.textContent = `${msg.id} : ${msg.text}`
         }
