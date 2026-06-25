@@ -9,23 +9,20 @@ let connects = []
 
 app.use(express.static('public'))
 
-app.ws('/ws', (ws, req) => {
+app.ws('/ws', (ws) => {
   connects.push(ws)
 
   ws.on('message', (message) => {
-    console.log('Received:', message)
-
-    // JSON文字列をオブジェクトに変換
     const msg = JSON.parse(message)
 
-    // 全員に送信
+    // ユーザーのメッセージを全員に送信
     connects.forEach((socket) => {
       if (socket.readyState === 1) {
         socket.send(message)
       }
     })
 
-    // チャットメッセージの場合はBOTが返事する
+    // BOTの返信
     if (msg.type === 'chat') {
       let reply = ''
 
@@ -35,23 +32,21 @@ app.ws('/ws', (ws, req) => {
         reply = 'おはよう！'
       } else if (msg.text.includes('こんばんは')) {
         reply = 'こんばんは！'
-      } else if (msg.text.includes('元気')) {
-        reply = '元気だよ！'
-      } else if (msg.text.includes('好き')) {
-        reply = 'ありがとう！'
       } else if (msg.text.includes('疲れた')) {
         reply = '今日はゆっくり休もう！'
       } else if (msg.text.includes('勉強')) {
         reply = '勉強頑張って！'
       } else if (msg.text.includes('野球')) {
-        reply = '野球いいね！好きなチームは？'
+        reply = '好きな球団はどこ？'
+      } else if (msg.text.includes('ありがとう')) {
+        reply = 'どういたしまして！'
       } else {
         const replies = [
-          'へぇー！',
-          'それでそれで？',
-          'もっと教えて！',
+          'なるほど！',
           '面白いね！',
-          'なるほど！'
+          'もっと教えて！',
+          'へぇー！',
+          'それでそれで？'
         ]
 
         reply = replies[Math.floor(Math.random() * replies.length)]
@@ -63,21 +58,11 @@ app.ws('/ws', (ws, req) => {
         type: 'chat'
       })
 
-      // 1秒後にBOTが返信
       setTimeout(() => {
         if (ws.readyState === 1) {
           ws.send(botMessage)
         }
       }, 1000)
-    }
-
-    // お絵描きデータの場合はそのまま送信
-    if (msg.type === 'paint') {
-      connects.forEach((socket) => {
-        if (socket.readyState === 1) {
-          socket.send(message)
-        }
-      })
     }
   })
 
